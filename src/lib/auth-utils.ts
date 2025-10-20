@@ -19,7 +19,7 @@ export const requireUnauth = async () => {
     headers: await headers(),
   });
 
-  if (!session) {
+  if (session) {
     redirect("/");
   }
 

@@ -1,8 +1,8 @@
-import prisma from '@/lib/db';
-import { generateSlug } from 'random-word-slugs';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import z from 'zod';
-import { PAGINATION } from '@/config/constants';
+import prisma from "@/lib/db";
+import { generateSlug } from "random-word-slugs";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import z from "zod";
+import { PAGINATION } from "@/config/constants";
 
 export const workflowRouter = createTRPCRouter({
   create: protectedProcedure.mutation(({ ctx }) => {
@@ -39,7 +39,7 @@ export const workflowRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
-      return prisma.workflow.findUnique({
+      return prisma.workflow.findUniqueOrThrow({
         where: {
           id: input.id,
           userId: ctx.auth.user.id,
@@ -55,7 +55,7 @@ export const workflowRouter = createTRPCRouter({
           .min(PAGINATION.MIN_PAGE_SIZE)
           .max(PAGINATION.MAX_PAGE_SIZE)
           .default(PAGINATION.DEFAULT_PAGE_SIZE),
-        search: z.string().default(''),
+        search: z.string().default(""),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -69,11 +69,11 @@ export const workflowRouter = createTRPCRouter({
             userId: ctx.auth.user.id,
             name: {
               contains: search,
-              mode: 'insensitive',
+              mode: "insensitive",
             },
           },
           orderBy: {
-            updatedAt: 'desc',
+            updatedAt: "desc",
           },
         }),
         prisma.workflow.count({
@@ -81,7 +81,7 @@ export const workflowRouter = createTRPCRouter({
             userId: ctx.auth.user.id,
             name: {
               contains: search,
-              mode: 'insensitive',
+              mode: "insensitive",
             },
           },
         }),

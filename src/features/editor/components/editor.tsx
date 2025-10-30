@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 import {
   ReactFlow,
   applyNodeChanges,
@@ -15,23 +15,26 @@ import {
   Controls,
   MiniMap,
   Panel,
-} from "@xyflow/react";
-import { ErrorView, LoadingView } from "@/components/entity-components";
-import { useSuspenseWorkflow } from "@/features/workflows/hooks/use-workflows";
-import "@xyflow/react/dist/style.css";
-import { nodeComponents } from "@/config/node-components";
-import { AddNodeButton } from "./add-node-button";
+} from '@xyflow/react';
+import { ErrorView, LoadingView } from '@/components/entity-components';
+import { useSuspenseWorkflow } from '@/features/workflows/hooks/use-workflows';
+import '@xyflow/react/dist/style.css';
+import { nodeComponents } from '@/config/node-components';
+import { AddNodeButton } from './add-node-button';
+import { useSetAtom } from 'jotai';
+import { editorAtom } from '../store/atoms';
 
 export const EditorLoading = () => {
-  return <LoadingView message="Loading editor..." />;
+  return <LoadingView message='Loading editor...' />;
 };
 
 export const EditorError = () => {
-  return <ErrorView message="Error loading editor" />;
+  return <ErrorView message='Error loading editor' />;
 };
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
+  const setEditor = useSetAtom(editorAtom);
 
   const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
   const [edges, setEdges] = useState<Edge[]>(workflow.edges);
@@ -53,7 +56,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   );
 
   return (
-    <div className="size-full">
+    <div className='size-full'>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -61,7 +64,13 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeComponents}
+        onInit={setEditor}
         fitView
+        snapGrid={[10, 10]}
+        snapToGrid
+        panOnScroll
+        panOnDrag={false}
+        selectionOnDrag
         proOptions={{
           hideAttribution: true,
         }}
@@ -69,7 +78,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         <Background />
         <Controls />
         <MiniMap />
-        <Panel position={"top-right"}>
+        <Panel position={'top-right'}>
           <AddNodeButton />
         </Panel>
       </ReactFlow>

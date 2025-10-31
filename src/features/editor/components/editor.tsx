@@ -69,7 +69,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         snapGrid={[10, 10]}
         snapToGrid
         panOnScroll
-        panOnDrag={false}
+        panOnDrag={[2]}
         selectionOnDrag
         proOptions={{
           hideAttribution: true,

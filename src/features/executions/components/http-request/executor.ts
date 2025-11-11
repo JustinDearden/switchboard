@@ -1,11 +1,19 @@
-import type { NodeExecutor } from "@/features/executions/types";
-import { NonRetriableError } from "inngest";
-import ky, { type Options as KyOptions } from "ky";
+import type { NodeExecutor } from '@/features/executions/types';
+import { NonRetriableError } from 'inngest';
+import axios, { type AxiosRequestConfig } from 'axios';
+import Handlebars from 'handlebars';
+
+Handlebars.registerHelper('json', (context) => {
+  const jsonString = JSON.stringify(context, null, 2);
+  const safeString = new Handlebars.SafeString(jsonString);
+
+  return safeString;
+});
 
 type HttpRequestData = {
-  variableName?: string;
-  endpoint?: string;
-  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  variableName: string;
+  endpoint: string;
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: string;
 };
 
@@ -19,35 +27,41 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
 
   if (!data.endpoint) {
     // TODO: Publish error state for http request
-    throw new NonRetriableError("HTTP Request node: No endpoint configured");
+    throw new NonRetriableError('HTTP Request node: No endpoint configured');
   }
 
   if (!data.variableName) {
     // TODO: Publish error state for http request
-    throw new NonRetriableError("Variable name not configured");
+    throw new NonRetriableError('Variable name not configured');
   }
 
-  const result = await step.run("http-request", async () => {
-    const endpoint = data.endpoint!;
-    const method = data.method || "GET";
+  if (!data.method) {
+    // TODO: Publish error state for http request
+    throw new NonRetriableError('Method not configured');
+  }
 
-    const options: KyOptions = { method };
+  const result = await step.run('http-request', async () => {
+    const endpoint = Handlebars.compile(data.endpoint)(context);
+    const method = data.method;
 
-    if (["POST", "PUT", "PATCH"].includes(method)) {
-      options.body = data.body;
+    const options: AxiosRequestConfig = { method };
+
+    if (['POST', 'PUT', 'PATCH'].includes(method)) {
+      const resolved = Handlebars.compile(data.body || '{}')(context);
+      JSON.parse(resolved);
+      options.data = resolved;
       options.headers = {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       };
     }
 
-    const response = await ky(endpoint, options);
-    const contentType = response.headers.get("content-type");
-    const responseData = contentType?.includes("application/json")
-      ? await response.json()
-      : await response.text();
+    const response = await axios(endpoint, options);
+    const contentType = response.headers['content-type'];
+    const responseData = contentType?.includes('application/json')
+      ? response.data
+      : String(response.data);
 
     const responsePayload = {
-      ...context,
       httpResponse: {
         status: response.status,
         statusText: response.statusText,
@@ -55,17 +69,9 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
       },
     };
 
-    if (data.variableName) {
-      return {
-        ...context,
-        [data.variableName]: responsePayload,
-      };
-    }
-
-    // Fallback to direct httpResponse for backwards compatibility
     return {
       ...context,
-      ...responsePayload,
+      [data.variableName]: responsePayload,
     };
   });
 

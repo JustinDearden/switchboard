@@ -1,11 +1,11 @@
-import prisma from '@/lib/db';
-import { generateSlug } from 'random-word-slugs';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import z from 'zod';
-import { PAGINATION } from '@/config/constants';
-import { NodeType } from '@/generated/prisma';
-import type { Node, Edge } from '@xyflow/react';
-import { inngest } from '@/inngest/client';
+import prisma from "@/lib/db";
+import { generateSlug } from "random-word-slugs";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import z from "zod";
+import { PAGINATION } from "@/config/constants";
+import { NodeType } from "@/generated/prisma";
+import type { Node, Edge } from "@xyflow/react";
+import { sendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowRouter = createTRPCRouter({
   execute: protectedProcedure
@@ -18,10 +18,7 @@ export const workflowRouter = createTRPCRouter({
         },
       });
 
-      await inngest.send({
-        name: 'workflows/execute.workflow',
-        data: { workflowId: input.id },
-      });
+      await sendWorkflowExecution({ workflowId: input.id });
 
       return workflow;
     }),
@@ -104,7 +101,7 @@ export const workflowRouter = createTRPCRouter({
           data: nodes.map((node) => ({
             id: node.id,
             workflowId: id,
-            name: node.type || 'unknown',
+            name: node.type || "unknown",
             type: node.type as NodeType,
             position: node.position,
             data: node.data || {},
@@ -117,8 +114,8 @@ export const workflowRouter = createTRPCRouter({
             workflowId: id,
             fromNodeId: edge.source,
             toNodeId: edge.target,
-            fromOutput: edge.sourceHandle || 'main',
-            toInput: edge.targetHandle || 'main',
+            fromOutput: edge.sourceHandle || "main",
+            toInput: edge.targetHandle || "main",
           })),
         });
 
@@ -175,7 +172,7 @@ export const workflowRouter = createTRPCRouter({
           .min(PAGINATION.MIN_PAGE_SIZE)
           .max(PAGINATION.MAX_PAGE_SIZE)
           .default(PAGINATION.DEFAULT_PAGE_SIZE),
-        search: z.string().default(''),
+        search: z.string().default(""),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -189,11 +186,11 @@ export const workflowRouter = createTRPCRouter({
             userId: ctx.auth.user.id,
             name: {
               contains: search,
-              mode: 'insensitive',
+              mode: "insensitive",
             },
           },
           orderBy: {
-            updatedAt: 'desc',
+            updatedAt: "desc",
           },
         }),
         prisma.workflow.count({
@@ -201,7 +198,7 @@ export const workflowRouter = createTRPCRouter({
             userId: ctx.auth.user.id,
             name: {
               contains: search,
-              mode: 'insensitive',
+              mode: "insensitive",
             },
           },
         }),

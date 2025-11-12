@@ -1,5 +1,6 @@
-import { Connection, Node } from '@/generated/prisma';
-import toposort from 'toposort';
+import { Connection, Node } from "@/generated/prisma";
+import toposort from "toposort";
+import { inngest } from "./client";
 
 export const topologicalSort = (
   nodes: Node[],
@@ -36,8 +37,8 @@ export const topologicalSort = (
     // Remove duplicates (from self-edges)
     sortedNodeIds = [...new Set(sortedNodeIds)];
   } catch (error) {
-    if (error instanceof Error && error.message.includes('Cyclic')) {
-      throw new Error('workflow contains a cycle');
+    if (error instanceof Error && error.message.includes("Cyclic")) {
+      throw new Error("workflow contains a cycle");
     }
     throw error;
   }
@@ -45,4 +46,14 @@ export const topologicalSort = (
   // Map sorted IDs back to node objects
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   return sortedNodeIds.map((id) => nodeMap.get(id)!).filter(Boolean);
+};
+
+export const sendWorkflowExecution = async (data: {
+  workflowId: string;
+  [key: string]: any;
+}) => {
+  return inngest.send({
+    name: "workflows/execute.workflow",
+    data,
+  });
 };

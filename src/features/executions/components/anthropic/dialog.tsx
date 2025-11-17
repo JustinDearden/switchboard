@@ -33,12 +33,10 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 export const AVAILABLE_MODELS = [
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
-  'gemini-1.5-pro',
-  'gemini-1.0-pro',
-  'gemini-pro',
+  'claude-sonnet-4-0',
+  'claude-sonnet-4-5-sonnet',
+  'claude-sonnet-4-5-sonnet-pro',
+  'claude-sonnet-4-5-sonnet-pro-ultra',
 ] as const;
 
 const formSchema = z.object({
@@ -54,16 +52,16 @@ const formSchema = z.object({
   userPrompt: z.string().min(1, 'User prompt is required'),
 });
 
-export type GeminiFormValues = z.infer<typeof formSchema>;
+export type AnthropicFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<GeminiFormValues>;
+  defaultValues?: Partial<AnthropicFormValues>;
 }
 
-export const GeminiDialog = ({
+export const AnthropicDialog = ({
   open,
   onOpenChange,
   onSubmit,
@@ -90,7 +88,7 @@ export const GeminiDialog = ({
     }
   }, [open, defaultValues, form]);
 
-  const watchVariableName = form.watch('variableName') || 'myGemini';
+  const watchVariableName = form.watch('variableName') || 'myAnthropic';
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
@@ -101,7 +99,7 @@ export const GeminiDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gemini Configuration</DialogTitle>
+          <DialogTitle>Anthropic Configuration</DialogTitle>
           <DialogDescription>
             Configure the AI model and rompts for this node.
           </DialogDescription>
@@ -118,7 +116,7 @@ export const GeminiDialog = ({
                 <FormItem>
                   <FormLabel>Variable Name</FormLabel>
                   <FormControl>
-                    <Input placeholder='myGemini' {...field} />
+                    <Input placeholder='myAnthropic' {...field} />
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{' '}
@@ -152,7 +150,7 @@ export const GeminiDialog = ({
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    The Google Gemini model to use for this completion.
+                    The Anthropic model to use for this completion.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

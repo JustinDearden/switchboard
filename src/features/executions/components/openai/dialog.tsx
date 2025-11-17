@@ -33,12 +33,12 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 export const AVAILABLE_MODELS = [
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
-  'gemini-1.5-pro',
-  'gemini-1.0-pro',
-  'gemini-pro',
+  'gpt-5',
+  'gpt-5-codex',
+  'gpt-5-mini',
+  'gpt-5-nano',
+  'gpt-5-pro',
+  'gpt-4',
 ] as const;
 
 const formSchema = z.object({
@@ -54,16 +54,16 @@ const formSchema = z.object({
   userPrompt: z.string().min(1, 'User prompt is required'),
 });
 
-export type GeminiFormValues = z.infer<typeof formSchema>;
+export type OpenAIFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<GeminiFormValues>;
+  defaultValues?: Partial<OpenAIFormValues>;
 }
 
-export const GeminiDialog = ({
+export const OpenAIDialog = ({
   open,
   onOpenChange,
   onSubmit,
@@ -90,7 +90,7 @@ export const GeminiDialog = ({
     }
   }, [open, defaultValues, form]);
 
-  const watchVariableName = form.watch('variableName') || 'myGemini';
+  const watchVariableName = form.watch('variableName') || 'myOpenAI';
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
@@ -101,7 +101,7 @@ export const GeminiDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gemini Configuration</DialogTitle>
+          <DialogTitle>OpenAI Configuration</DialogTitle>
           <DialogDescription>
             Configure the AI model and rompts for this node.
           </DialogDescription>
@@ -118,7 +118,7 @@ export const GeminiDialog = ({
                 <FormItem>
                   <FormLabel>Variable Name</FormLabel>
                   <FormControl>
-                    <Input placeholder='myGemini' {...field} />
+                    <Input placeholder='myOpenAI' {...field} />
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{' '}
@@ -152,7 +152,7 @@ export const GeminiDialog = ({
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    The Google Gemini model to use for this completion.
+                    The OpenAI model to use for this completion.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

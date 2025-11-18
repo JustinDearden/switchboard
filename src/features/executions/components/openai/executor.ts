@@ -1,11 +1,12 @@
-import type { NodeExecutor } from '@/features/executions/types';
-import { NonRetriableError } from 'inngest';
-import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
-import Handlebars from 'handlebars';
-import { openaiChannel } from '@/inngest/channels/openai';
+import type { NodeExecutor } from "@/features/executions/types";
+import { NonRetriableError } from "inngest";
+import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+import Handlebars from "handlebars";
+import { openaiChannel } from "@/inngest/channels/openai";
+import prisma from "@/lib/db";
 
-Handlebars.registerHelper('json', (context) => {
+Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
   const safeString = new Handlebars.SafeString(jsonString);
 
@@ -14,6 +15,7 @@ Handlebars.registerHelper('json', (context) => {
 
 type OpenAIData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -29,7 +31,7 @@ export const openaiExecutor: NodeExecutor<OpenAIData> = async ({
   await publish(
     openaiChannel().status({
       nodeId,
-      status: 'loading',
+      status: "loading",
     })
   );
 
@@ -37,40 +39,60 @@ export const openaiExecutor: NodeExecutor<OpenAIData> = async ({
     await publish(
       openaiChannel().status({
         nodeId,
-        status: 'error',
+        status: "error",
       })
     );
 
-    throw new NonRetriableError('OpenAI node: Variable name is missing');
+    throw new NonRetriableError("OpenAI node: Variable name is missing");
+  }
+
+  if (!data.credentialId) {
+    await publish(
+      openaiChannel().status({
+        nodeId,
+        status: "error",
+      })
+    );
+
+    throw new NonRetriableError("OpenAI node: Credential ID is missing");
   }
 
   if (!data.userPrompt) {
     await publish(
       openaiChannel().status({
         nodeId,
-        status: 'error',
+        status: "error",
       })
     );
 
-    throw new NonRetriableError('OpenAI node: User prompt is missing');
+    throw new NonRetriableError("OpenAI node: User prompt is missing");
   }
 
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
-    : 'You are a helpful assistant.';
+    : "You are a helpful assistant.";
 
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
-  // ToDo: Fetch credential that user selected
-  const credentialValue = process.env.OPENAI_API_KEY;
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId,
+      },
+    });
+  });
+
+  if (!credential) {
+    throw new NonRetriableError("Gemini node: Credential not found");
+  }
 
   const openai = createOpenAI({
-    apiKey: credentialValue,
+    apiKey: credential.value,
   });
 
   try {
-    const { steps } = await step.ai.wrap('openai-generate-text', generateText, {
-      model: openai(data.model || 'gpt-5-mini'),
+    const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
+      model: openai(data.model || "gpt-5-mini"),
       system: systemPrompt,
       prompt: userPrompt,
       experimental_telemetry: {
@@ -81,12 +103,12 @@ export const openaiExecutor: NodeExecutor<OpenAIData> = async ({
     });
 
     const text =
-      steps[0].content[0].type === 'text' ? steps[0].content[0].text : '';
+      steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
 
     await publish(
       openaiChannel().status({
         nodeId,
-        status: 'success',
+        status: "success",
       })
     );
 
@@ -100,7 +122,7 @@ export const openaiExecutor: NodeExecutor<OpenAIData> = async ({
     await publish(
       openaiChannel().status({
         nodeId,
-        status: 'error',
+        status: "error",
       })
     );
 

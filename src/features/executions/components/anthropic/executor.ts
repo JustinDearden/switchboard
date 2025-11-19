@@ -23,6 +23,7 @@ type AnthropicData = {
 
 export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
   data,
+  userId,
   nodeId,
   context,
   step,
@@ -78,11 +79,18 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     return prisma.credential.findUnique({
       where: {
         id: data.credentialId,
+        userId,
       },
     });
   });
 
   if (!credential) {
+    await publish(
+      anthropicChannel().status({
+        nodeId,
+        status: "error",
+      })
+    );
     throw new NonRetriableError("Gemini node: Credential not found");
   }
 

@@ -1,19 +1,20 @@
-'use client';
+"use client";
 
-import { useReactFlow, type Node, type NodeProps } from '@xyflow/react';
-import { memo, useState } from 'react';
-import { BaseExecutionNode } from '../base-execution-node';
+import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
+import { memo, useState } from "react";
+import { BaseExecutionNode } from "../base-execution-node";
 import {
   AVAILABLE_MODELS,
   AnthropicDialog,
   AnthropicFormValues,
-} from './dialog';
-import { useNodeStatus } from '../../hooks/use-node-status';
-import { fetchAnthropicToken } from './actions';
-import { ANTHROPIC_CHANNEL_NAME } from '@/inngest/channels/anthropic';
+} from "./dialog";
+import { useNodeStatus } from "../../hooks/use-node-status";
+import { fetchAnthropicToken } from "./actions";
+import { ANTHROPIC_CHANNEL_NAME } from "@/inngest/channels/anthropic";
 
 type AnthropicNodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -28,7 +29,7 @@ export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
     channel: ANTHROPIC_CHANNEL_NAME,
-    topic: 'status',
+    topic: "status",
     refreshToken: fetchAnthropicToken,
   });
 
@@ -57,7 +58,7 @@ export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
         0,
         50
       )}...`
-    : 'Not configured';
+    : "Not configured";
 
   return (
     <>
@@ -70,8 +71,8 @@ export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
       <BaseExecutionNode
         {...props}
         id={props.id}
-        icon='/logos/anthropic.svg'
-        name='Anthropic'
+        icon="/logos/anthropic.svg"
+        name="Anthropic"
         status={nodeStatus}
         description={description}
         onSettings={handleOpenSettings}
@@ -81,4 +82,4 @@ export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
   );
 });
 
-AnthropicNode.displayName = 'AnthropicNode';
+AnthropicNode.displayName = "AnthropicNode";

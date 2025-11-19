@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import { useReactFlow, type Node, type NodeProps } from '@xyflow/react';
-import { memo, useState } from 'react';
-import { BaseExecutionNode } from '../base-execution-node';
-import { AVAILABLE_MODELS, OpenAIDialog, OpenAIFormValues } from './dialog';
-import { useNodeStatus } from '../../hooks/use-node-status';
-import { fetchOpenAIToken } from './actions';
-import { OPENAI_CHANNEL_NAME } from '@/inngest/channels/openai';
+import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
+import { memo, useState } from "react";
+import { BaseExecutionNode } from "../base-execution-node";
+import { AVAILABLE_MODELS, OpenAIDialog, OpenAIFormValues } from "./dialog";
+import { useNodeStatus } from "../../hooks/use-node-status";
+import { fetchOpenAIToken } from "./actions";
+import { OPENAI_CHANNEL_NAME } from "@/inngest/channels/openai";
 
 type OpenAINodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -24,7 +25,7 @@ export const OpenAINode = memo((props: NodeProps<OpenAINodeType>) => {
   const nodeStatus = useNodeStatus({
     nodeId: props.id,
     channel: OPENAI_CHANNEL_NAME,
-    topic: 'status',
+    topic: "status",
     refreshToken: fetchOpenAIToken,
   });
 
@@ -53,7 +54,7 @@ export const OpenAINode = memo((props: NodeProps<OpenAINodeType>) => {
         0,
         50
       )}...`
-    : 'Not configured';
+    : "Not configured";
 
   return (
     <>
@@ -66,8 +67,8 @@ export const OpenAINode = memo((props: NodeProps<OpenAINodeType>) => {
       <BaseExecutionNode
         {...props}
         id={props.id}
-        icon='/logos/openai.svg'
-        name='OpenAI'
+        icon="/logos/openai.svg"
+        name="OpenAI"
         status={nodeStatus}
         description={description}
         onSettings={handleOpenSettings}
@@ -77,4 +78,4 @@ export const OpenAINode = memo((props: NodeProps<OpenAINodeType>) => {
   );
 });
 
-OpenAINode.displayName = 'OpenAINode';
+OpenAINode.displayName = "OpenAINode";

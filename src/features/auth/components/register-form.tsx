@@ -54,11 +54,9 @@ export function RegisterForm() {
     await authClient.signIn.social(
       {
         provider: 'github',
+        callbackURL: '/',
       },
       {
-        onSuccess: () => {
-          router.push('/');
-        },
         onError: (ctx) => {
           toast.error('Something went wrong');
         },
@@ -70,11 +68,9 @@ export function RegisterForm() {
     await authClient.signIn.social(
       {
         provider: 'google',
+        callbackURL: '/',
       },
       {
-        onSuccess: () => {
-          router.push('/');
-        },
         onError: (ctx) => {
           toast.error('Something went wrong');
         },

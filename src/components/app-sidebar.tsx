@@ -101,6 +101,7 @@ export const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          {/* Temporarily hidden:
           {!hasActiveSubscription && !isLoading && (
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -123,6 +124,7 @@ export const AppSidebar = () => {
               <span>Billing Portal</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          */}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip='Sign out'

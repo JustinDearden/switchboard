@@ -144,7 +144,7 @@ export const DiscordDialog = ({
                   <FormControl>
                     <Textarea
                       placeholder='Summary: {{myDiscord.text}}'
-                      className='min-h-[80px] font-mono text-sm'
+                      className='min-h-[120px] max-h-[120px] overflow-y-auto font-mono text-sm'
                       {...field}
                     />
                   </FormControl>

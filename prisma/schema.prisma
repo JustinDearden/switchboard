@@ -120,6 +120,9 @@ enum NodeType {
   OPENAI
   DISCORD
   SLACK
+  IF
+  SWITCH
+  FOR_EACH
 }
 
 model Node {

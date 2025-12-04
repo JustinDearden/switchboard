@@ -2,7 +2,13 @@
 
 import { createId } from '@paralleldrive/cuid2';
 import { useReactFlow } from '@xyflow/react';
-import { GlobeIcon, MousePointerIcon } from 'lucide-react';
+import {
+  GlobeIcon,
+  MousePointerIcon,
+  GitBranch as GitBranchIcon,
+  ListTree as ListTreeIcon,
+  Repeat as RepeatIcon,
+} from 'lucide-react';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import {
@@ -51,6 +57,24 @@ const executionNodes: NodeTypeOption[] = [
     label: 'HTTP Request',
     description: 'Makes an HTTP request',
     icon: GlobeIcon,
+  },
+  {
+    type: NodeType.IF,
+    label: 'If / Else',
+    description: 'Branch based on a condition',
+    icon: GitBranchIcon,
+  },
+  {
+    type: NodeType.SWITCH,
+    label: 'Switch / Match',
+    description: 'Branch based on a value',
+    icon: ListTreeIcon,
+  },
+  {
+    type: NodeType.FOR_EACH,
+    label: 'For Each',
+    description: 'Iterate over an array of items',
+    icon: RepeatIcon,
   },
   {
     type: NodeType.GEMINI,

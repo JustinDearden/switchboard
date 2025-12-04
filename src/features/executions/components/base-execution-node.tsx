@@ -20,6 +20,8 @@ interface BaseExecutionNodeProps extends NodeProps {
   status?: NodeStatus;
   onSettings?: () => void;
   onDoubleClick?: () => void;
+  renderDefaultSourceHandle?: boolean;
+  renderDefaultTargetHandle?: boolean;
 }
 
 export const BaseExecutionNode = memo(
@@ -32,6 +34,8 @@ export const BaseExecutionNode = memo(
     status = 'initial',
     onSettings,
     onDoubleClick,
+    renderDefaultSourceHandle = true,
+    renderDefaultTargetHandle = true,
   }: BaseExecutionNodeProps) => {
     const { setNodes, setEdges } = useReactFlow();
 
@@ -65,16 +69,20 @@ export const BaseExecutionNode = memo(
                 <Icon className='size-4 text-muted-foreground' />
               )}
               {children}
-              <BaseHandle
-                id='target-1'
-                type='target'
-                position={Position.Left}
-              />
-              <BaseHandle
-                id='source-1'
-                type='source'
-                position={Position.Right}
-              />
+              {renderDefaultTargetHandle !== false && (
+                <BaseHandle
+                  id='target-1'
+                  type='target'
+                  position={Position.Left}
+                />
+              )}
+              {renderDefaultSourceHandle !== false && (
+                <BaseHandle
+                  id='source-1'
+                  type='source'
+                  position={Position.Right}
+                />
+              )}
             </BaseNodeContent>
           </BaseNode>
         </NodeStatusIndicator>

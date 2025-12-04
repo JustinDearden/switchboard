@@ -9,6 +9,9 @@ import { openaiExecutor } from '../components/openai/executor';
 import { anthropicExecutor } from '../components/anthropic/executor';
 import { discordExecutor } from '../components/discord/executor';
 import { slackExecutor } from '../components/slack/executor';
+import { ifElseExecutor } from '../components/control/if-else/executor';
+import { switchExecutor } from '../components/control/switch/executor';
+import { forEachExecutor } from '../components/control/for-each/executor';
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
   [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
@@ -21,6 +24,9 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   [NodeType.ANTHROPIC]: anthropicExecutor,
   [NodeType.DISCORD]: discordExecutor,
   [NodeType.SLACK]: slackExecutor,
+  [NodeType.IF]: ifElseExecutor,
+  [NodeType.SWITCH]: switchExecutor,
+  [NodeType.FOR_EACH]: forEachExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {

@@ -1,4 +1,4 @@
-## Nodebase
+## Switchboard
 
 Visual workflow automation with real-time execution. Build flows with triggers (Manual, HTTP, Google Forms, Stripe) and actions (OpenAI, Anthropic, Gemini, HTTP, Slack, Discord), then watch them run live via Inngest Realtime.
 

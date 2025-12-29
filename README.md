@@ -131,7 +131,7 @@ Notes:
 - `npm run dev:all`: Run Next + Inngest + ngrok together (via `mprocs`)
 - `npx prisma migrate dev`: Apply database migrations
 
-## What to showcase (portfolio)
+## Features
 
 - **Visual workflow editor** built with React Flow and type-safe nodes
 - **Real-time execution** using Inngest channels with live status updates
